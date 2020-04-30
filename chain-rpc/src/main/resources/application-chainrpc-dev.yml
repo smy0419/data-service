@@ -1,0 +1,18 @@
+block-chain-endpoint: ${block chain rpc host:ip}
+
+ok:
+  http:
+    connect-timeout: 30
+    read-timeout: 30
+    write-timeout: 30
+    max-idle-connections: 200
+    keep-alive-duration: 300
+
+# oss
+oss:
+  endpoint: ${endpoint}
+  access_key_id: ${id}
+  access_key_secret: ${secret}
+  bucket_name: ${bucket}
+  photo_url:
+    prefix: ${prefix}

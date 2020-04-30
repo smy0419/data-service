@@ -1,0 +1,1 @@
+alter table `t_dao_indivisible_asset` add column tx_hash varchar(64) NOT NULL COMMENT 'Transaction Hash';

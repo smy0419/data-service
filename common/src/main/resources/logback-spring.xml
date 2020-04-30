@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="DEFAULT_LOG_PATH" source="log.path.default"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"
+                    defaultValue="${DEFAULT_LOG_PATH}"/>
+
+    <springProfile name="dev">
+        <Property name="LOG_PATH" value="/tmp/log"/>
+    </springProfile>
+
+    <springProfile name="test,testnet">
+        <Property name="LOG_PATH" value="/var/log"/>
+    </springProfile>
+
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{20} - %msg%n
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-AUDIT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/service.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{20} - %msg%n
+            </Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}/service.%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <springProfile name="dev,test">
+        <root level="info">
+            <springProfile name="dev">
+                <appender-ref ref="STDOUT"/>
+            </springProfile>
+            <appender-ref ref="FILE-AUDIT"/>
+        </root>
+
+        <logger name="org.springframework.data.mongodb.core" level="DEBUG" additivity="false">
+            <springProfile name="dev">
+                <appender-ref ref="STDOUT"/>
+            </springProfile>
+        </logger>
+
+    </springProfile>
+
+    <springProfile name="testnet">
+        <root level="info">
+            <appender-ref ref="FILE-AUDIT"/>
+        </root>
+    </springProfile>
+</configuration>

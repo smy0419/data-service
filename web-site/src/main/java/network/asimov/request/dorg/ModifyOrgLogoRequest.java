@@ -1,0 +1,25 @@
+package network.asimov.request.dorg;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import network.asimov.validator.annotation.AddressValidate;
+
+import javax.validation.constraints.NotBlank;
+
+/**
+ * @author sunmengyuan
+ * @date 2020-01-14
+ */
+@Data
+public class ModifyOrgLogoRequest {
+    @ApiModelProperty(value = "Organization Logo")
+    @JsonProperty("org_logo")
+    private String orgLogo;
+
+    @NotBlank(message = "contract_address not blank")
+    @ApiModelProperty(value = "Contract Address", required = true)
+    @AddressValidate
+    @JsonProperty("contract_address")
+    private String contractAddress;
+}

@@ -1,0 +1,3 @@
+log:
+  path:
+    default: log_${random.uuid}
