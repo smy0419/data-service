@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>web_site</artifactId>
+    <artifactId>web-site</artifactId>
 
     <dependencies>
         <!-- spring-boot-web change tomcat to jetty -->
