@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TDaoIndivisibleAssetRecord extends UpdatableRecordImpl<TDaoIndivisibleAssetRecord> implements Record9<Long, String, String, String, Long, String, Byte, Long, Long> {
 
-    private static final long serialVersionUID = 1881893890;
+    private static final long serialVersionUID = 609644066;
 
     /**
      * Setter for <code>asimov_server.t_dao_indivisible_asset.id</code>. 主键
@@ -45,14 +45,14 @@ public class TDaoIndivisibleAssetRecord extends UpdatableRecordImpl<TDaoIndivisi
     }
 
     /**
-     * Setter for <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. 交易Hash
+     * Setter for <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. Transaction Hash
      */
     public void setTxHash(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. 交易Hash
+     * Getter for <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. Transaction Hash
      */
     public String getTxHash() {
         return (String) get(1);

@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TDaoIndivisibleAsset extends TableImpl<TDaoIndivisibleAssetRecord> {
 
-    private static final long serialVersionUID = -1151863765;
+    private static final long serialVersionUID = -1690390127;
 
     /**
      * The reference instance of <code>asimov_server.t_dao_indivisible_asset</code>
@@ -61,9 +61,9 @@ public class TDaoIndivisibleAsset extends TableImpl<TDaoIndivisibleAssetRecord> 
     public final TableField<TDaoIndivisibleAssetRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "主键");
 
     /**
-     * The column <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. 交易Hash
+     * The column <code>asimov_server.t_dao_indivisible_asset.tx_hash</code>. Transaction Hash
      */
-    public final TableField<TDaoIndivisibleAssetRecord, String> TX_HASH = createField("tx_hash", org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "交易Hash");
+    public final TableField<TDaoIndivisibleAssetRecord, String> TX_HASH = createField("tx_hash", org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "Transaction Hash");
 
     /**
      * The column <code>asimov_server.t_dao_indivisible_asset.contract_address</code>. 组织合约地址
