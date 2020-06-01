@@ -1,5 +1,8 @@
 package network.asimov.controller.ascan;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import network.asimov.behavior.check.CheckArgsUtil;
@@ -7,9 +10,9 @@ import network.asimov.behavior.check.CheckBehavior;
 import network.asimov.behavior.convert.ConvertBehavior;
 import network.asimov.chainrpc.pojo.AssetDTO;
 import network.asimov.chainrpc.service.BalanceService;
-import network.asimov.mongodb.entity.ascan.AddressTransaction;
 import network.asimov.mongodb.entity.common.AssetSummary;
 import network.asimov.mongodb.service.ascan.TransactionStatisticsService;
+import network.asimov.redis.service.TransactionCacheService;
 import network.asimov.request.RequestConstants;
 import network.asimov.request.ascan.AddressPageQuery;
 import network.asimov.request.ascan.AddressQuery;
@@ -54,6 +57,9 @@ public class AddressController {
     @Resource(name = "addressExistCheck")
     private CheckBehavior addressExistCheck;
 
+    @Resource(name = "transactionCacheService")
+    private TransactionCacheService transactionCacheService;
+
     @ApiOperation(value = "Get detail information via address")
     @PostMapping(path = "/detail")
     public ResultView<AddressDetailView> getAddressDetail(@RequestBody @Validated AddressQuery addressQuery) {
@@ -84,15 +90,21 @@ public class AddressController {
     @ApiOperation(value = "Get transaction via address")
     @PostMapping(path = "/transaction/query")
     public ResultView<PageView<AddressTransactionView>> listAddressTransaction(@RequestBody @Validated AddressPageQuery addressPageQuery) {
-        // 获取列表
-        Pair<Long, List<AddressTransaction>> transactions = transactionStatisticsService.queryTxListByPage(AddressTransaction.class, addressPageQuery.getAddress(), addressPageQuery.getPage().getIndex(), addressPageQuery.getPage().getLimit());
+        Pair<Long, List<String>> transactions = transactionCacheService.queryTransactionCache(addressPageQuery.getAddress(), addressPageQuery.getPage().getIndex(), addressPageQuery.getPage().getLimit());
+        List<AddressTransactionView> transactionViews = transactions.getRight().stream().map(v -> {
+            JSONObject tx = JSONObject.parseObject(v);
+            JSONArray feeArray = tx.getJSONArray("fee");
+            List<AssetSummary> feeList = Lists.newArrayList();
+            for(int i = 0; i < feeArray.size(); i++) {
+                JSONObject fee = feeArray.getJSONObject(i);
+                feeList.add(AssetSummary.builder().asset(fee.getString("asset")).value(fee.getLongValue("value")).build());
+            }
 
-        List<AddressTransactionView> transactionViews = transactions.getRight()
-                .stream().map(v -> AddressTransactionView.builder()
-                        .txHash(v.getTxHash())
-                        .time(v.getTime())
-                        .fee(assetConvertBehavior.convert(v.getFee())).build()).collect(Collectors.toList());
-
+            return AddressTransactionView.builder()
+                    .txHash(tx.getString("tx_hash"))
+                    .time(tx.getLong("time"))
+                    .fee(assetConvertBehavior.convert(feeList)).build();
+        }).collect(Collectors.toList());
         return ResultView.ok(PageView.of(transactions.getLeft(), transactionViews));
     }
 

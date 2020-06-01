@@ -5,4 +5,4 @@ spring:
   application:
     name: web-site
   profiles:
-    active: dev,mysql-dev,mongodb-dev,chainrpc-dev
+    active: dev,mysql-dev,mongodb-dev,chainrpc-dev,redis-dev

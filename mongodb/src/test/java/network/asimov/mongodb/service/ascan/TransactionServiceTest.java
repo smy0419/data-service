@@ -1,7 +1,6 @@
 package network.asimov.mongodb.service.ascan;
 
 import com.google.common.collect.Lists;
-import network.asimov.mongodb.entity.ascan.AssetTransaction;
 import network.asimov.mongodb.entity.ascan.Transaction;
 import network.asimov.mongodb.entity.ascan.Vin;
 import network.asimov.mongodb.entity.ascan.Vout;
@@ -84,8 +83,8 @@ public class TransactionServiceTest extends TransactionService {
         Query query3 = new Query(Criteria.where("hash").in("hash6", "hash7"));
         mongoTemplate.remove(query3, Vout.class);
 
-        Query query4 = new Query(Criteria.where("asset").in("000000010000000000000001", "000000010000000000000002"));
-        mongoTemplate.remove(query4, AssetTransaction.class);
+//        Query query4 = new Query(Criteria.where("asset").in("000000010000000000000001", "000000010000000000000002"));
+//        mongoTemplate.remove(query4, AssetTransaction.class);
 
     }
 
@@ -95,21 +94,21 @@ public class TransactionServiceTest extends TransactionService {
         Assert.assertTrue(pair.getRight().size() > 0);
     }
 
-    @Test
-    public void testQueryBlockByPage() {
-        Integer index = 1;
-        Integer limit = 10;
-
-        Pair<Long, List<Transaction>> p1 = queryBlockByPage(index, limit);
-        Assert.assertTrue(p1.getRight().size() > 0);
-    }
+//    @Test
+//    public void testQueryBlockByPage() {
+//        Integer index = 1;
+//        Integer limit = 10;
+//
+//        Pair<Long, List<Transaction>> p1 = queryBlockByPage(index, limit);
+//        Assert.assertTrue(p1.getRight().size() > 0);
+//    }
 
     @Test
     public void testGetByHash() {
-        Optional<Transaction> op1 = getByHash("hash3");
+        Optional<Transaction> op1 = get("hash3");
         Assert.assertTrue(op1.isPresent());
 
-        Optional<Transaction> op2 = getByHash("hash33");
+        Optional<Transaction> op2 = get("hash33");
         Assert.assertTrue(!op2.isPresent());
     }
 

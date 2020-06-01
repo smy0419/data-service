@@ -1,5 +1,7 @@
 package network.asimov.controller.ascan;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -7,10 +9,10 @@ import network.asimov.behavior.convert.ConvertBehavior;
 import network.asimov.error.ErrorCode;
 import network.asimov.mongodb.entity.ascan.Asset;
 import network.asimov.mongodb.entity.ascan.AssetIssue;
-import network.asimov.mongodb.entity.ascan.AssetTransaction;
 import network.asimov.mongodb.entity.common.AssetSummary;
 import network.asimov.mongodb.service.ascan.*;
 import network.asimov.mysql.service.dorg.DaoIndivisibleAssetService;
+import network.asimov.redis.service.TransactionCacheService;
 import network.asimov.request.RequestConstants;
 import network.asimov.request.ascan.AssetNamePageQuery;
 import network.asimov.request.ascan.AssetPageQuery;
@@ -63,6 +65,9 @@ public class AssetController {
     @Resource(name = "transactionStatisticsService")
     private TransactionStatisticsService transactionStatisticsService;
 
+    @Resource(name = "transactionCacheService")
+    private TransactionCacheService transactionCacheService;
+
     @ApiOperation(value = "Get asset detail information")
     @PostMapping("/detail")
     public ResultView<AssetDetailView> getAssetDetailInfo(@RequestBody @Validated AssetQuery assetQuery) {
@@ -100,12 +105,21 @@ public class AssetController {
     @ApiOperation(value = "Get transactions via asset")
     @PostMapping("/transaction/list")
     public ResultView<PageView<TransactionView>> listTransactionByAsset(@RequestBody @Validated AssetPageQuery assetPageQuery) {
-        Pair<Long, List<AssetTransaction>> transactions = transactionStatisticsService.queryTxListByPage(AssetTransaction.class, assetPageQuery.getAsset(),assetPageQuery.getPage().getIndex(), assetPageQuery.getPage().getLimit());
-        List<TransactionView> transactionViews = transactions.getRight().stream().map(v -> TransactionView.builder()
-                .hash(v.getTxHash())
-                .time(v.getTime())
-                .fee(assetConvertBehavior.convert(v.getFee())).build()).collect(Collectors.toList());
+        Pair<Long, List<String>> transactions = transactionCacheService.queryTransactionCache(assetPageQuery.getAsset(), assetPageQuery.getPage().getIndex(), assetPageQuery.getPage().getLimit());
+        List<TransactionView> transactionViews = transactions.getRight().stream().map(v -> {
+            JSONObject tx = JSONObject.parseObject(v);
+            JSONArray feeArray = tx.getJSONArray("fee");
+            List<AssetSummary> feeList = Lists.newArrayList();
+            for(int i = 0; i < feeArray.size(); i++) {
+                JSONObject fee = feeArray.getJSONObject(i);
+                feeList.add(AssetSummary.builder().asset(fee.getString("asset")).value(fee.getLongValue("value")).build());
+            }
 
+            return TransactionView.builder()
+                    .hash(tx.getString("tx_hash"))
+                    .time(tx.getLong("time"))
+                    .fee(assetConvertBehavior.convert(feeList)).build();
+        }).collect(Collectors.toList());
         return ResultView.ok(PageView.of(transactions.getLeft(), transactionViews));
     }
 

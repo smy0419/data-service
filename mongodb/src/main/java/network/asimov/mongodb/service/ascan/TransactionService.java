@@ -1,10 +1,8 @@
 package network.asimov.mongodb.service.ascan;
 
-import network.asimov.mongodb.entity.ascan.AssetTransaction;
 import network.asimov.mongodb.entity.ascan.Transaction;
 import network.asimov.mongodb.service.BaseService;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -34,24 +32,19 @@ public class TransactionService extends BaseService {
     }
 
     /**
-     * Paging to get transactions
-     *
-     * @param limit page limit
-     * @return <total count，transaction list>
-     */
-    public Pair<Long, List<Transaction>> queryBlockByPage(Integer index, Integer limit) {
-        Query query = new Query();
-        return queryByPageTopN(1000, index, limit, query, Transaction.class,  Sort.Direction.DESC, "height");
-    }
-
-    /**
      * Get transaction information via transaction hash
      *
      * @param hash transaction hash
      * @return transaction information
      */
-    public Optional<Transaction> getByHash(String hash) {
+    public Optional<Transaction> get(String hash) {
         Query query = new Query(Criteria.where("hash").is(hash));
+        Transaction transaction = mongoTemplate.findOne(query, Transaction.class);
+        return Optional.ofNullable(transaction);
+    }
+
+    public Optional<Transaction> get(long height, String hash) {
+        Query query = new Query(Criteria.where("height").is(height).and("hash").is(hash));
         Transaction transaction = mongoTemplate.findOne(query, Transaction.class);
         return Optional.ofNullable(transaction);
     }

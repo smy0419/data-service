@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
     <jdbc>
-        <!--<driver>${spring.datasource.driver-class-name}</driver>-->
-        <!--<url>${spring.datasource.url}</url>-->
-        <!--<user>${spring.datasource.username}</user>-->
-        <!--<password>${spring.datasource.password}</password>-->
         <driver>com.mysql.cj.jdbc.Driver</driver>
-        <url>jdbc:mysql://127.0.0.1:3306/asimov_server?characterEncoding=utf-8</url>
-        <user>root</user>
-        <password>123456</password>
+        <url>jdbc:mysql://${host}:${port}/asimov_server?characterEncoding=utf-8</url>
+        <user>${user}</user>
+        <password>${password}</password>
     </jdbc>
 
     <generator>
         <database>
             <name>org.jooq.meta.mysql.MySQLDatabase</name>
             <includes>.*</includes>
-            <!--<excludes></excludes>-->
             <inputSchema>asimov_server</inputSchema>
         </database>
         <generate>
-            <!--生成dao和pojo-->
+            <!--generate dao and pojo-->
             <!--<daos>true</daos>-->
             <pojos>true</pojos>
         </generate>

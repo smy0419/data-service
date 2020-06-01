@@ -1,6 +1,5 @@
 package network.asimov.mongodb.service.ascan;
 
-import network.asimov.mongodb.entity.ascan.AddressTransaction;
 import network.asimov.mongodb.entity.ascan.TransactionCount;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
@@ -43,17 +42,17 @@ public class TransactionStatisticsServiceTest extends TransactionStatisticsServi
 		t3.setCategory(3);
 		mongoTemplate.save(t3);
 
-		AddressTransaction a1 = new AddressTransaction();
-		a1.setKey("0x666");
-		a1.setTxHash("hash1");
-		a1.setHeight(1L);
-		mongoTemplate.save(a1);
-
-		AddressTransaction a2 = new AddressTransaction();
-		a2.setKey("0x666");
-		a2.setTxHash("hash2");
-		a2.setHeight(2L);
-		mongoTemplate.save(a2);
+//		AddressTransaction a1 = new AddressTransaction();
+//		a1.setKey("0x666");
+//		a1.setTxHash("hash1");
+//		a1.setHeight(1L);
+//		mongoTemplate.save(a1);
+//
+//		AddressTransaction a2 = new AddressTransaction();
+//		a2.setKey("0x666");
+//		a2.setTxHash("hash2");
+//		a2.setHeight(2L);
+//		mongoTemplate.save(a2);
 	}
 
 	@After
@@ -61,7 +60,7 @@ public class TransactionStatisticsServiceTest extends TransactionStatisticsServi
 		Query query = new Query(Criteria.where("key").in("0x666", "0x999", "0x888"));
 		mongoTemplate.remove(query, TransactionCount.class);
 
-		mongoTemplate.remove(new Query(Criteria.where("key").is("0x666")), AddressTransaction.class);
+//		mongoTemplate.remove(new Query(Criteria.where("key").is("0x666")), AddressTransaction.class);
 	}
 
 	@Test
@@ -91,9 +90,9 @@ public class TransactionStatisticsServiceTest extends TransactionStatisticsServi
 		Assert.assertTrue(p1.getRight().size() >= 1);
 	}
 
-	@Test
-	public void testQueryTxListByPage() {
-		Pair<Long, List<AddressTransaction>> p1 = queryTxListByPage(AddressTransaction.class, "0x666", 1, 10);
-		Assert.assertTrue(p1.getRight().size() == 2);
-	}
+//	@Test
+//	public void testQueryTxListByPage() {
+//		Pair<Long, List<AddressTransaction>> p1 = queryTxListByPage(AddressTransaction.class, "0x666", 1, 10);
+//		Assert.assertTrue(p1.getRight().size() == 2);
+//	}
 }

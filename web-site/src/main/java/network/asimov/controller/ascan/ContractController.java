@@ -1,5 +1,8 @@
 package network.asimov.controller.ascan;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import network.asimov.behavior.check.CheckArgsUtil;
@@ -10,10 +13,10 @@ import network.asimov.chainrpc.pojo.ContractSourceDTO;
 import network.asimov.chainrpc.service.BalanceService;
 import network.asimov.chainrpc.service.ContractService;
 import network.asimov.error.ErrorCode;
-import network.asimov.mongodb.entity.ascan.ContractTransaction;
 import network.asimov.mongodb.entity.ascan.TransactionCount;
 import network.asimov.mongodb.entity.common.AssetSummary;
 import network.asimov.mongodb.service.ascan.TransactionStatisticsService;
+import network.asimov.redis.service.TransactionCacheService;
 import network.asimov.request.RequestConstants;
 import network.asimov.request.ascan.AddressPageQuery;
 import network.asimov.request.ascan.AddressQuery;
@@ -60,6 +63,9 @@ public class ContractController {
     @Resource(name = "contractService")
     private ContractService contractService;
 
+    @Resource(name = "transactionCacheService")
+    private TransactionCacheService transactionCacheService;
+
     @ApiOperation(value = "Get contract detail information via address")
     @PostMapping(path = "/detail")
     public ResultView<ContractDetailView> getContractDetail(@RequestBody @Validated AddressQuery addressQuery) {
@@ -93,13 +99,21 @@ public class ContractController {
     @ApiOperation(value = "Query transaction by page via address")
     @PostMapping(path = "/transaction/query")
     public ResultView<PageView<AddressTransactionView>> listContractTransaction(@RequestBody @Validated AddressPageQuery addressPageQuery) {
-        Pair<Long, List<ContractTransaction>> transactions =  transactionStatisticsService.queryTxListByPage(ContractTransaction.class, addressPageQuery.getAddress(), addressPageQuery.getPage().getIndex(), addressPageQuery.getPage().getLimit());
-        List<AddressTransactionView> transactionViews = transactions.getRight()
-                .stream().map(v -> AddressTransactionView.builder()
-                        .txHash(v.getTxHash())
-                        .time(v.getTime())
-                        .fee(assetConvertBehavior.convert(v.getFee())).build()).collect(Collectors.toList());
+        Pair<Long, List<String>> transactions = transactionCacheService.queryTransactionCache(addressPageQuery.getAddress(), addressPageQuery.getPage().getIndex(), addressPageQuery.getPage().getLimit());
+        List<AddressTransactionView> transactionViews = transactions.getRight().stream().map(v -> {
+            JSONObject tx = JSONObject.parseObject(v);
+            JSONArray feeArray = tx.getJSONArray("fee");
+            List<AssetSummary> feeList = Lists.newArrayList();
+            for(int i = 0; i < feeArray.size(); i++) {
+                JSONObject fee = feeArray.getJSONObject(i);
+                feeList.add(AssetSummary.builder().asset(fee.getString("asset")).value(fee.getLongValue("value")).build());
+            }
 
+            return AddressTransactionView.builder()
+                    .txHash(tx.getString("tx_hash"))
+                    .time(tx.getLong("time"))
+                    .fee(assetConvertBehavior.convert(feeList)).build();
+        }).collect(Collectors.toList());
         return ResultView.ok(PageView.of(transactions.getLeft(), transactionViews));
     }
 

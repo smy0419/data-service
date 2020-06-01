@@ -1,6 +1,5 @@
 package network.asimov.controller.ascan;
 
-import network.asimov.mongodb.entity.ascan.ContractTransaction;
 import network.asimov.mongodb.entity.ascan.TransactionCount;
 import org.junit.Before;
 import org.junit.Test;
@@ -265,18 +264,18 @@ public class ContractControllerTest {
 				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
-		ContractTransaction t1 = mongoTemplate.findOne(new Query(), ContractTransaction.class);
-		String json3 = "{\"address\":\"" + t1.getKey() + "\"}";
-		mvc.perform(
-				MockMvcRequestBuilders.post("/ascan/contract/balances")
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON_UTF8)
-						.content(json3.getBytes()))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(MockMvcResultMatchers.jsonPath("code").value(0))
-				.andExpect(MockMvcResultMatchers.jsonPath("data.balances").exists())
-				.andDo(MockMvcResultHandlers.print())
-				.andReturn();
+//		ContractTransaction t1 = mongoTemplate.findOne(new Query(), ContractTransaction.class);
+//		String json3 = "{\"address\":\"" + t1.getKey() + "\"}";
+//		mvc.perform(
+//				MockMvcRequestBuilders.post("/ascan/contract/balances")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.accept(MediaType.APPLICATION_JSON_UTF8)
+//						.content(json3.getBytes()))
+//				.andExpect(MockMvcResultMatchers.status().isOk())
+//				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+//				.andExpect(MockMvcResultMatchers.jsonPath("code").value(0))
+//				.andExpect(MockMvcResultMatchers.jsonPath("data.balances").exists())
+//				.andDo(MockMvcResultHandlers.print())
+//				.andReturn();
 	}
 }
