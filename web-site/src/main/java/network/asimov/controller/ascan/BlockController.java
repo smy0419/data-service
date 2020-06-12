@@ -80,7 +80,7 @@ public class BlockController {
     public ResultView<BlockHeightView> getHandledBlockHeight() {
         Optional<Long> height = blockService.getHandledBlockHeight();
         BlockHeightView blockHeightView = BlockHeightView.builder().height(0).build();
-        height.ifPresent(blockHeightView::setHeight);
+        height.ifPresent(v -> blockHeightView.setHeight(v+1));
 
         return ResultView.ok(blockHeightView);
     }

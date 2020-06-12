@@ -34,7 +34,7 @@ public class OrgInfoView {
     @JsonProperty(value = "member_count")
     private Long memberCount;
 
-    @ApiModelProperty(value = "Organization Status: 1.normal 2.closed 3.local initialize")
+    @ApiModelProperty(value = "Organization Status: 0.normal 1.closed 2.local initialize")
     private Integer status;
 
     @ApiModelProperty(value = "Role Type: 0-president；1-member")

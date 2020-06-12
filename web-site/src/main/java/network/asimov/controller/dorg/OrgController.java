@@ -86,7 +86,7 @@ public class OrgController {
         for (Member member : pair.getRight()) {
             Optional<TDaoOrganization> mySqlOrgOptional = daoMysqlOrganizationService.getOrgByContractAddress(member.getContractAddress());
             if (!mySqlOrgOptional.isPresent()) {
-                return ResultView.error(ErrorCode.DATA_ERROR);
+                continue;
             }
             TDaoOrganization org = mySqlOrgOptional.get();
             long memberCount = memberService.countMember(org.getContractAddress());
