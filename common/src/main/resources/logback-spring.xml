@@ -8,7 +8,7 @@
         <Property name="LOG_PATH" value="/tmp/log"/>
     </springProfile>
 
-    <springProfile name="test,testnet">
+    <springProfile name="test,testnet,mainnet">
         <Property name="LOG_PATH" value="/var/log"/>
     </springProfile>
 
@@ -54,10 +54,9 @@
                 <appender-ref ref="STDOUT"/>
             </springProfile>
         </logger>
-
     </springProfile>
 
-    <springProfile name="testnet">
+    <springProfile name="testnet,mainnet">
         <root level="info">
             <appender-ref ref="FILE-AUDIT"/>
         </root>
