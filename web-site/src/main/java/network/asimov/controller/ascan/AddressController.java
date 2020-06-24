@@ -117,7 +117,7 @@ public class AddressController {
             return checkResult;
         }
 
-        List<AssetDTO> assetDTOList = balanceService.listBalance(addressQuery.getAddress());
+        List<AssetDTO> assetDTOList = balanceService.listBalanceFromDatabase(addressQuery.getAddress());
         List<AssetView> balances = balanceConvertBehavior.convert(assetDTOList);
         return ResultView.ok(
                 AddressBalanceView.builder()
