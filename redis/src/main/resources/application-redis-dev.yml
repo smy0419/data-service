@@ -2,3 +2,4 @@ spring:
   redis:
     host: ${localhost}
     port: ${port}
+    password: ${password}
